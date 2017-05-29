@@ -2,6 +2,7 @@ from __future__ import with_statement
 from fabric.api import *
 from fabric.operations import *
 from fabric.contrib.console import confirm
+from fabric.contrib.files import exists
 import os
 
 env.hosts = ['172.168.2.116']
