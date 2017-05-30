@@ -5,9 +5,15 @@ from fabric.contrib.console import confirm
 from fabric.contrib.files import exists
 import os
 
+# Please change the env.hosts according to the real IP of DB Server
 env.hosts = ['172.168.2.117']
 env.user = 'root'
 env.password = '123456'
+
+API_SERVER_IP = '172.168.2.115'
+WEB_SERVER_IP = '172.168.2.116'
+
+MYSQL_LOGIN = "mysql -uroot -proot_db_pass -e "
 
 def setup_db():
     if not confirm("Are you sure host " + env.hosts[0] + " is a DB Server?"):
@@ -23,6 +29,11 @@ def setup_db():
     run('apt-get install -q -y mysql-server')
     run("echo -e 'root_db_pass\n n\n Y\n Y\n Y\n Y\n' | /usr/bin/mysql_secure_installation")
     run('mysql_install_db')
+    run(MYSQL_LOGIN + "\"GRANT ALL PRIVILEGES ON *.* TO 'root'@'" + API_SERVER_IP + "' IDENTIFIED BY 'root_db_pass' WITH GRANT OPTION;\"")
+    run(MYSQL_LOGIN + "\"GRANT ALL PRIVILEGES ON *.* TO 'root'@'" + WEB_SERVER_IP + "' IDENTIFIED BY 'root_db_pass' WITH GRANT OPTION;\"")
+    run(MYSQL_LOGIN + "\"GRANT ALL PRIVILEGES ON *.* TO 'root_dev'@'localhost' IDENTIFIED BY 'root_dev_pass' WITH GRANT OPTION;\"")
+    run(MYSQL_LOGIN + "\"GRANT ALL PRIVILEGES ON *.* TO 'root_dev'@'%' IDENTIFIED BY 'root_dev_pass' WITH GRANT OPTION;\"")
+    run(MYSQL_LOGIN + "\"FLUSH PRIVILEGES;\"")
 
     local_php_path = os.getcwd() + '/php.ini'
     remote_php_path = '/etc/php5/fpm/php.ini'
@@ -44,5 +55,6 @@ def setup_db():
     
     #run('apt-get install phpmyadmin')
     run('service php5-fpm restart')
+    run('service mysql restart')
     run('service nginx restart')
     run('timedatectl set-timezone Asia/Jakarta')

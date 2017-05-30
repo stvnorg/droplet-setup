@@ -5,6 +5,7 @@ from fabric.contrib.console import confirm
 from fabric.contrib.files import exists
 import os
 
+# Please change the env.hosts according to the real IP of API Server
 env.hosts = ['172.168.2.115']
 env.user = 'root'
 env.password = '123456'
