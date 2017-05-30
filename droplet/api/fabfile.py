@@ -10,6 +10,7 @@ env.user = 'root'
 env.password = '123456'
 
 def install():
+    run('apt-get update')
     run('apt-get install -y php5 php5-curl php5-mysqlnd apache2 zip')    
     run('a2enmod rewrite')
     run('service apache2 restart')
@@ -18,7 +19,7 @@ def install():
     local_path = os.getcwd() + '/000-default.conf'
     remote_path = '/etc/apache2/sites-available/000-default.conf'
     with settings(warn_only=True):
-        result = put(local_path, remote_path, mode=0755)
+        result = put(local_path, remote_path, mode=0644)
     if result.failed and not confirm("Apache setup failed. Continue anyway?"):
         abort("Aborting at user request.")
     run('service apache2 restart')

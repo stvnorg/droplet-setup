@@ -5,7 +5,7 @@ from fabric.contrib.console import confirm
 from fabric.contrib.files import exists
 import os
 
-env.hosts = ['172.168.2.116']
+env.hosts = ['172.168.2.117']
 env.user = 'root'
 env.password = '123456'
 
@@ -14,7 +14,8 @@ def install():
     run('apt-get install -y php5')    
     run('apt-get remove -y apache2')
     run('apt-get install -y nginx')
-    run('apt-get install -y php5-curl php5-gd php5-mysql php5-fpm zip')
+    run('apt-get install -y php5-curl php5-gd php5-mysql php5-fpm php5-mcrypt zip')
+    run('php5enmod mcrypt')
 
     local_php_path = os.getcwd() + '/php.ini'
     remote_php_path = '/etc/php5/fpm/php.ini'
@@ -34,7 +35,7 @@ def install():
     if result.failed and not confirm("Nginx-PHP setup failed. Continue anyway?"):
         abort("Aborting at user request.")    
     
+    run('apt-get install phpmyadmin')
     run('service php5-fpm restart')
     run('service nginx restart')
     run('timedatectl set-timezone Asia/Jakarta')
-    run('apt-get install -y sendmail heirloom-mailx')
