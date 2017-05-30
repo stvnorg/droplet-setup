@@ -9,7 +9,12 @@ env.hosts = ['172.168.2.116']
 env.user = 'root'
 env.password = '123456'
 
-def install():
+
+def setup_web():
+
+    if not confirm("Are you sure host " + env.hosts[0] + " is a WEB Server?"):
+        abort("Abort!")
+
     run('apt-get update')
     run('apt-get install -y php5')    
     run('apt-get remove -y apache2')

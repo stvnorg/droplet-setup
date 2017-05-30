@@ -9,11 +9,13 @@ env.hosts = ['172.168.2.115']
 env.user = 'root'
 env.password = '123456'
 
-def install():
+def setup_api():
+    if not confirm("Are you sure host " + env.hosts[0] + " is an API Server?"):
+        abort("Abort!")
     run('apt-get update')
     run('apt-get install -y php5 php5-curl php5-mysqlnd apache2 zip')    
     run('a2enmod rewrite')
-    run('service apache2 restart')
+
     if not exists('/etc/apache2/sites-available/000-default.conf.bak'):
         run('cp /etc/apache2/sites-available/000-default.conf /etc/apache2/sites-available/000-default.conf.bak')
     local_path = os.getcwd() + '/000-default.conf'
@@ -22,5 +24,6 @@ def install():
         result = put(local_path, remote_path, mode=0644)
     if result.failed and not confirm("Apache setup failed. Continue anyway?"):
         abort("Aborting at user request.")
+
     run('service apache2 restart')
     run('timedatectl set-timezone Asia/Jakarta')
