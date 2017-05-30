@@ -14,28 +14,26 @@ def install():
     run('apt-get remove -y apache2')
     run('apt-get install -y nginx')
     run('apt-get install -y php5-curl php5-gd php5-mysql php5-fpm zip')
-    
+
     local_php_path = os.getcwd() + '/php.ini'
     remote_php_path = '/etc/php5/fpm/php.ini'
     if not exists('/etc/php5/fpm/php.ini.bak'):
         run('cp /etc/php5/fpm/php.ini /etc/php5/fpm/php.ini.bak')
     with settings(warn_only=True):
-        result = put(local_php_path, remote_php_path, mode=0755)
+        result = put(local_php_path, remote_php_path, mode=0644)
     if result.failed and not confirm("Nginx-PHP setup failed. Continue anyway?"):
         abort("Aborting at user request.")
     
-    local_www_conf_path = os.getcwd() + '/www.conf'
-    remote_www_conf_path = '/etc/php5/fpm/pool.d/www.conf'
-    if not exists('/etc/php5/fpm/pool.d/www.conf.bak'):
-        run('cp /etc/php5/fpm/pool.d/www.conf /etc/php5/fpm/pool.d/www.conf.bak')
-    with settings(warn_only=True):
-        result = put(local_www_conf_path, remote_www_conf_path, mode=0755)
-    if result.failed and not confirm("Nginx-PHP setup failed. Continue anyway?"):
-        abort("Aborting at user request.")
-
     local_default_path = os.getcwd() + '/default'
     remote_default_path = '/etc/nginx/sites-available/default'
+    if not exists('/etc/nginx/sites-available/default.bak'):
+        run('cp /etc/nginx/sites-available/default /etc/nginx/sites-available/default.bak')
     with settings(warn_only=True):
-        result = put(local_default_path, remote_default_path, mode=0755)
+        result = put(local_default_path, remote_default_path, mode=0644)
     if result.failed and not confirm("Nginx-PHP setup failed. Continue anyway?"):
         abort("Aborting at user request.")    
+    
+    run('service php5-fpm restart')
+    run('service nginx restart')
+    run('timedatectl set-timezone Asia/Jakarta')
+    run('apt-get install -y sendmail heirloom-mailx')
