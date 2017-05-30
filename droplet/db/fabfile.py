@@ -19,7 +19,7 @@ MYSQL_LOGIN = "mysql -uroot -proot_db_pass -e "
 def setup_db():
     if not confirm("Are you sure host " + env.hosts[0] + " is a DB Server?"):
         abort("Abort!")
-    run('apt-get update')
+    #run('apt-get update')
     run('apt-get install -y php5')    
     run('apt-get remove -y apache2')
     run('apt-get install -y nginx')
@@ -35,10 +35,11 @@ def setup_db():
     run(MYSQL_LOGIN + "\"GRANT ALL PRIVILEGES ON *.* TO 'root_dev'@'localhost' IDENTIFIED BY 'root_dev_pass' WITH GRANT OPTION;\"")
     run(MYSQL_LOGIN + "\"GRANT ALL PRIVILEGES ON *.* TO 'root_dev'@'%' IDENTIFIED BY 'root_dev_pass' WITH GRANT OPTION;\"")
     run(MYSQL_LOGIN + "\"FLUSH PRIVILEGES;\"")
-    run('service mysql restart')
 
     if not exists('/etc/mysql/my.cnf.bak'):
         run('cp /etc/mysql/my.cnf /etc/mysql/my.cnf.bak')
+    run("sed -e 's/127.0.0.1/" + DB_SERVER_IP + "/g' /etc/mysql/my.cnf.bak > /etc/mysql/my.cnf")
+    run('service mysql restart')
 
     local_php_path = os.getcwd() + '/php.ini'
     remote_php_path = '/etc/php5/fpm/php.ini'
