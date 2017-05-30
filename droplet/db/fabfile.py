@@ -5,13 +5,14 @@ from fabric.contrib.console import confirm
 from fabric.contrib.files import exists
 import os
 
-# Please change the env.hosts according to the real IP of DB Server
+# Please set the env.hosts according to the real IP of DB Server
 env.hosts = ['172.168.2.117']
 env.user = 'root'
 env.password = '123456'
 
 API_SERVER_IP = '172.168.2.115'
 WEB_SERVER_IP = '172.168.2.116'
+DB_SERVER_IP = '172.168.2.117'
 
 MYSQL_LOGIN = "mysql -uroot -proot_db_pass -e "
 
@@ -34,6 +35,10 @@ def setup_db():
     run(MYSQL_LOGIN + "\"GRANT ALL PRIVILEGES ON *.* TO 'root_dev'@'localhost' IDENTIFIED BY 'root_dev_pass' WITH GRANT OPTION;\"")
     run(MYSQL_LOGIN + "\"GRANT ALL PRIVILEGES ON *.* TO 'root_dev'@'%' IDENTIFIED BY 'root_dev_pass' WITH GRANT OPTION;\"")
     run(MYSQL_LOGIN + "\"FLUSH PRIVILEGES;\"")
+    run('service mysql restart')
+
+    if not exists('/etc/mysql/my.cnf.bak'):
+        run('cp /etc/mysql/my.cnf /etc/mysql/my.cnf.bak')
 
     local_php_path = os.getcwd() + '/php.ini'
     remote_php_path = '/etc/php5/fpm/php.ini'
