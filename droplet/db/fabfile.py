@@ -19,7 +19,7 @@ MYSQL_LOGIN = "mysql -uroot -proot_db_pass -e "
 def setup_db():
     if not confirm("Are you sure host " + env.hosts[0] + " is a DB Server?"):
         abort("Abort!")
-    #run('apt-get update')
+    run('apt-get update')
     run('apt-get install -y php5')    
     run('apt-get remove -y apache2')
     run('apt-get install -y nginx')
@@ -59,7 +59,14 @@ def setup_db():
     if result.failed and not confirm("Nginx-PHP setup failed. Continue anyway?"):
         abort("Aborting at user request.")    
     
-    #run('apt-get install phpmyadmin')
+    run("debconf-set-selections <<< 'phpmyadmin phpmyadmin/app-password-confirm root_db_pass'")
+    run("debconf-set-selections <<< 'phpmyadmin phpmyadmin/password-confirm root_db_pass'")    
+    run("debconf-set-selections <<< 'phpmyadmin phpmyadmin/mysql/app-pass root_db_pass'")
+    run("debconf-set-selections <<< 'phpmyadmin phpmyadmin/mysql/admin-pass root_db_pass'")
+    run("debconf-set-selections <<< 'phpmyadmin phpmyadmin/setup-password root_db_pass'")
+    run("debconf-set-selections <<< 'phpmyadmin phpmyadmin/dbconfig-install true'")
+    run('apt-get install -y phpmyadmin')
+    run('ln -s /usr/share/phpmyadmin /usr/share/nginx/html')
     run('service php5-fpm restart')
     run('service mysql restart')
     run('service nginx restart')
