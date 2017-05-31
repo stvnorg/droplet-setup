@@ -21,6 +21,7 @@ def setup_web():
     run('apt-get remove -y apache2')
     run('apt-get install -y nginx')
     run('apt-get install -y php5-curl php5-gd php5-mysql php5-fpm zip')
+    run('apt-get install -y debconf-utils')
 
     local_php_path = os.getcwd() + '/php.ini'
     remote_php_path = '/etc/php5/fpm/php.ini'
