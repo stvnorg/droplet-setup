@@ -12,7 +12,11 @@ env.password = '123456'
 
 API_SERVER_IP = '172.168.2.115'
 WEB_SERVER_IP = '172.168.2.116'
+
 DB_SERVER_IP = '172.168.2.117'
+ROOT_PASSWORD = 'root_db_pass'
+DB_DEV_USER = 'root_dev'
+DB_DEV_PASSWORD = 'root_dev_pass'
 
 MYSQL_LOGIN = "mysql -uroot -proot_db_pass -e "
 
@@ -26,15 +30,15 @@ def setup_db():
     run('apt-get install -y php5-curl php5-gd php5-mysql php5-fpm php5-mcrypt zip')
     run('php5enmod mcrypt')
     run('apt-get install -y debconf-utils')
-    run("debconf-set-selections <<< 'mysql-server mysql-server/root_password password root_db_pass'")
-    run("debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password root_db_pass'")
+    run("debconf-set-selections <<< 'mysql-server mysql-server/root_password password " + ROOT_PASSWORD + "'")
+    run("debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password " + ROOT_PASSWORD + "'")
     run('apt-get install -q -y mysql-server')
     run("echo -e 'root_db_pass\n n\n Y\n Y\n Y\n Y\n' | /usr/bin/mysql_secure_installation")
     run('mysql_install_db')
-    run(MYSQL_LOGIN + "\"GRANT ALL PRIVILEGES ON *.* TO 'root'@'" + API_SERVER_IP + "' IDENTIFIED BY 'root_db_pass' WITH GRANT OPTION;\"")
-    run(MYSQL_LOGIN + "\"GRANT ALL PRIVILEGES ON *.* TO 'root'@'" + WEB_SERVER_IP + "' IDENTIFIED BY 'root_db_pass' WITH GRANT OPTION;\"")
-    run(MYSQL_LOGIN + "\"GRANT ALL PRIVILEGES ON *.* TO 'root_dev'@'localhost' IDENTIFIED BY 'root_dev_pass' WITH GRANT OPTION;\"")
-    run(MYSQL_LOGIN + "\"GRANT ALL PRIVILEGES ON *.* TO 'root_dev'@'%' IDENTIFIED BY 'root_dev_pass' WITH GRANT OPTION;\"")
+    run(MYSQL_LOGIN + "\"GRANT ALL PRIVILEGES ON *.* TO 'root'@'" + API_SERVER_IP + "' IDENTIFIED BY '" + ROOT_PASSWORD + "' WITH GRANT OPTION;\"")
+    run(MYSQL_LOGIN + "\"GRANT ALL PRIVILEGES ON *.* TO 'root'@'" + WEB_SERVER_IP + "' IDENTIFIED BY '" + ROOT_PASSWORD + "' WITH GRANT OPTION;\"")
+    run(MYSQL_LOGIN + "\"GRANT ALL PRIVILEGES ON *.* TO '" + DB_DEV_USER + "'@'localhost' IDENTIFIED BY '" + DB_DEV_PASSWORD + "' WITH GRANT OPTION;\"")
+    run(MYSQL_LOGIN + "\"GRANT ALL PRIVILEGES ON *.* TO '" + DB_DEV_USER + "'@'%' IDENTIFIED BY '" + DB_DEV_PASSWORD + "' WITH GRANT OPTION;\"")
     run(MYSQL_LOGIN + "\"FLUSH PRIVILEGES;\"")
 
     if not exists('/etc/mysql/my.cnf.bak'):
@@ -61,11 +65,11 @@ def setup_db():
         abort("Aborting at user request.")    
     
     run("debconf-set-selections <<< 'phpmyadmin phpmyadmin/reconfigure-webserver multiselect none'")    
-    run("debconf-set-selections <<< 'phpmyadmin phpmyadmin/app-password-confirm password root_db_pass'")
-    run("debconf-set-selections <<< 'phpmyadmin phpmyadmin/password-confirm password root_db_pass'")    
-    run("debconf-set-selections <<< 'phpmyadmin phpmyadmin/mysql/app-pass password root_db_pass'")
-    run("debconf-set-selections <<< 'phpmyadmin phpmyadmin/mysql/admin-pass password root_db_pass'")
-    run("debconf-set-selections <<< 'phpmyadmin phpmyadmin/setup-password password root_db_pass'")
+    run("debconf-set-selections <<< 'phpmyadmin phpmyadmin/app-password-confirm password " + ROOT_PASSWORD + "'")
+    run("debconf-set-selections <<< 'phpmyadmin phpmyadmin/password-confirm password " + ROOT_PASSWORD + "'")    
+    run("debconf-set-selections <<< 'phpmyadmin phpmyadmin/mysql/app-pass password " + ROOT_PASSWORD + "'")
+    run("debconf-set-selections <<< 'phpmyadmin phpmyadmin/mysql/admin-pass password " + ROOT_PASSWORD + "'")
+    run("debconf-set-selections <<< 'phpmyadmin phpmyadmin/setup-password password " + ROOT_PASSWORD + "'")
     run("debconf-set-selections <<< 'phpmyadmin phpmyadmin/dbconfig-install boolean true'")
     run('apt-get install -y phpmyadmin')
     run('ln -s /usr/share/phpmyadmin /usr/share/nginx/html')
