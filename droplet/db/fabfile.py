@@ -8,7 +8,7 @@ import os
 # Please set the env.hosts according to the real IP of DB Server
 env.hosts = ['172.168.2.117']
 env.user = 'root'
-env.password = '123456'
+env.password = 'single-electron-trunk'
 
 API_SERVER_IP = '172.168.2.115'
 WEB_SERVER_IP = '172.168.2.116'
@@ -24,7 +24,7 @@ def setup_db():
     if not confirm("Are you sure host " + env.hosts[0] + " is a DB Server?"):
         abort("Abort!")
     run('apt-get update')
-    run('apt-get install -y php5')    
+    run('apt-get install -y php5')
     run('apt-get remove -y apache2')
     run('apt-get install -y nginx')
     run('apt-get install -y php5-curl php5-gd php5-mysql php5-fpm php5-mcrypt zip')
@@ -54,7 +54,7 @@ def setup_db():
         result = put(local_php_path, remote_php_path, mode=0644)
     if result.failed and not confirm("Nginx-PHP setup failed. Continue anyway?"):
         abort("Aborting at user request.")
-    
+
     local_default_path = os.getcwd() + '/default'
     remote_default_path = '/etc/nginx/sites-available/default'
     if not exists('/etc/nginx/sites-available/default.bak'):
@@ -62,18 +62,38 @@ def setup_db():
     with settings(warn_only=True):
         result = put(local_default_path, remote_default_path, mode=0644)
     if result.failed and not confirm("Nginx-PHP setup failed. Continue anyway?"):
-        abort("Aborting at user request.")    
-    
-    run("debconf-set-selections <<< 'phpmyadmin phpmyadmin/reconfigure-webserver multiselect none'")    
+        abort("Aborting at user request.")
+
+    run("debconf-set-selections <<< 'phpmyadmin phpmyadmin/reconfigure-webserver multiselect none'")
     run("debconf-set-selections <<< 'phpmyadmin phpmyadmin/app-password-confirm password " + ROOT_PASSWORD + "'")
-    run("debconf-set-selections <<< 'phpmyadmin phpmyadmin/password-confirm password " + ROOT_PASSWORD + "'")    
+    run("debconf-set-selections <<< 'phpmyadmin phpmyadmin/password-confirm password " + ROOT_PASSWORD + "'")
     run("debconf-set-selections <<< 'phpmyadmin phpmyadmin/mysql/app-pass password " + ROOT_PASSWORD + "'")
     run("debconf-set-selections <<< 'phpmyadmin phpmyadmin/mysql/admin-pass password " + ROOT_PASSWORD + "'")
     run("debconf-set-selections <<< 'phpmyadmin phpmyadmin/setup-password password " + ROOT_PASSWORD + "'")
     run("debconf-set-selections <<< 'phpmyadmin phpmyadmin/dbconfig-install boolean true'")
     run('apt-get install -y phpmyadmin')
-    run('ln -s /usr/share/phpmyadmin /usr/share/nginx/html')
+    if not exists('/usr/share/nginx/html/phpmyadmin'):
+        run('ln -s /usr/share/phpmyadmin /usr/share/nginx/html')
     run('service php5-fpm restart')
     run('service mysql restart')
     run('service nginx restart')
     run('timedatectl set-timezone Asia/Jakarta')
+
+    #### Uncomment all lines below to change the Maximum phpmyadmin upload file and query time
+
+    #if not exists('/etc/php5/fpm/php.ini.stream'):
+    #    run('cp /etc/php5/fpm/php.ini /etc/php5/fpm/php.ini.stream')
+    #run("sed -e 's/max_execution_time = 30/max_execution_time = 300/g' /etc/php5/fpm/php.ini.stream > /etc/php5/fpm/php.ini")
+    #run("cp /etc/php5/fpm/php.ini /etc/php5/fpm/php.ini.stream")
+    #run("sed -e 's/max_input_time = 60/max_input_time = 600/g' /etc/php5/fpm/php.ini.stream > /etc/php5/fpm/php.ini")
+    #run("cp /etc/php5/fpm/php.ini /etc/php5/fpm/php.ini.stream")
+    #run("sed -e 's/memory_limit = 128M/memory_limit = 1024M/g' /etc/php5/fpm/php.ini.stream > /etc/php5/fpm/php.ini")
+    #run("cp /etc/php5/fpm/php.ini /etc/php5/fpm/php.ini.stream")
+    #run("sed -e 's/post_max_size = 8M/post_max_size = 50M/g' /etc/php5/fpm/php.ini.stream > /etc/php5/fpm/php.ini")
+    #run("cp /etc/php5/fpm/php.ini /etc/php5/fpm/php.ini.stream")
+    #run("sed -e 's/upload_max_filesize = 2M/upload_max_filesize = 50M/g' /etc/php5/fpm/php.ini.stream > /etc/php5/fpm/php.ini")
+    #run('service php5-fpm restart')
+    #run('service mysql restart')
+    #run('service nginx restart')
+
+    #### End of Line

@@ -8,7 +8,7 @@ import os
 # Please set the env.hosts according to the real IP of API Server
 env.hosts = ['172.168.2.115']
 env.user = 'root'
-env.password = '123456'
+env.password = 'single-electron-trunk'
 
 def setup_api():
     if not confirm("Are you sure host " + env.hosts[0] + " is an API Server?"):

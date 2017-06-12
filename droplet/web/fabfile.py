@@ -8,7 +8,7 @@ import os
 # Please set the env.hosts according to the real IP of WEB Server
 env.hosts = ['172.168.2.116']
 env.user = 'root'
-env.password = '123456'
+env.password = 'single-electron-trunk'
 
 
 def setup_web():
