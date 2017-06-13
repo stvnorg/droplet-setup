@@ -6,9 +6,15 @@ from fabric.contrib.files import exists
 import os
 
 # Please set the env.hosts according to the real IP of WEB Server
+<<<<<<< HEAD
 env.hosts = ['172.168.2.116']
 env.user = 'root'
 env.password = 'single-electron-trunk'
+=======
+env.hosts = ['172.168.2.115']
+env.user = 'root'
+env.password = '123456'
+>>>>>>> 18th Commit
 
 
 def setup_web():
@@ -41,6 +47,12 @@ def setup_web():
     if result.failed and not confirm("Nginx-PHP setup failed. Continue anyway?"):
         abort("Aborting at user request.")    
     
+<<<<<<< HEAD
+=======
+    if not exists('/etc/nginx/nginx.conf.bak'):
+        run('cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf.bak')
+    run("sed -i '70 a \\\tclient_max_body_size 5M;' /etc/nginx/nginx.conf")
+>>>>>>> 18th Commit
     run('service php5-fpm restart')
     run('service nginx restart')
     run('timedatectl set-timezone Asia/Jakarta')

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+
+>>>>>>> 18th Commit
 from __future__ import with_statement
 from fabric.api import *
 from fabric.operations import *
@@ -44,7 +48,12 @@ def setup_db():
     if not exists('/etc/mysql/my.cnf.bak'):
         run('cp /etc/mysql/my.cnf /etc/mysql/my.cnf.bak')
     run("sed -e 's/127.0.0.1/" + DB_SERVER_IP + "/g' /etc/mysql/my.cnf.bak > /etc/mysql/my.cnf")
+<<<<<<< HEAD
     run('service mysql restart')
+=======
+    if not exists('/etc/php5/fpm/php.ini.bak'):
+        run('cp /etc/php5/fpm/php.ini /etc/php5/fpm/php.ini.bak')
+>>>>>>> 18th Commit
 
     local_php_path = os.getcwd() + '/php.ini'
     remote_php_path = '/etc/php5/fpm/php.ini'
@@ -79,12 +88,21 @@ def setup_db():
     run('service nginx restart')
     run('timedatectl set-timezone Asia/Jakarta')
 
+<<<<<<< HEAD
     #### Uncomment all lines below to change the Maximum phpmyadmin upload file and query time
 
     #if not exists('/etc/php5/fpm/php.ini.stream'):
     #    run('cp /etc/php5/fpm/php.ini /etc/php5/fpm/php.ini.stream')
     #run("sed -e 's/max_execution_time = 30/max_execution_time = 300/g' /etc/php5/fpm/php.ini.stream > /etc/php5/fpm/php.ini")
     #run("cp /etc/php5/fpm/php.ini /etc/php5/fpm/php.ini.stream")
+=======
+
+    if not exists('/etc/php5/fpm/php.ini.stream'):
+        run('cp /etc/php5/fpm/php.ini /etc/php5/fpm/php.ini.stream')
+
+    run("sed -e 's/max_execution_time = 30/max_execution_time = 800/g' /etc/php5/fpm/php.ini.stream > /etc/php5/fpm/php.ini")
+    run("cp /etc/php5/fpm/php.ini /etc/php5/fpm/php.ini.stream")
+>>>>>>> 18th Commit
     #run("sed -e 's/max_input_time = 60/max_input_time = 600/g' /etc/php5/fpm/php.ini.stream > /etc/php5/fpm/php.ini")
     #run("cp /etc/php5/fpm/php.ini /etc/php5/fpm/php.ini.stream")
     #run("sed -e 's/memory_limit = 128M/memory_limit = 1024M/g' /etc/php5/fpm/php.ini.stream > /etc/php5/fpm/php.ini")
@@ -92,8 +110,14 @@ def setup_db():
     #run("sed -e 's/post_max_size = 8M/post_max_size = 50M/g' /etc/php5/fpm/php.ini.stream > /etc/php5/fpm/php.ini")
     #run("cp /etc/php5/fpm/php.ini /etc/php5/fpm/php.ini.stream")
     #run("sed -e 's/upload_max_filesize = 2M/upload_max_filesize = 50M/g' /etc/php5/fpm/php.ini.stream > /etc/php5/fpm/php.ini")
+<<<<<<< HEAD
     #run('service php5-fpm restart')
     #run('service mysql restart')
     #run('service nginx restart')
 
     #### End of Line
+=======
+    run('service php5-fpm restart')
+    run('service mysql restart')
+    run('service nginx restart')
+>>>>>>> 18th Commit
