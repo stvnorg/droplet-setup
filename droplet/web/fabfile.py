@@ -6,15 +6,9 @@ from fabric.contrib.files import exists
 import os
 
 # Please set the env.hosts according to the real IP of WEB Server
-<<<<<<< HEAD
-env.hosts = ['172.168.2.116']
-env.user = 'root'
-env.password = 'single-electron-trunk'
-=======
 env.hosts = ['172.168.2.115']
 env.user = 'root'
 env.password = '123456'
->>>>>>> 18th Commit
 
 
 def setup_web():
@@ -23,7 +17,7 @@ def setup_web():
         abort("Abort!")
 
     run('apt-get update')
-    run('apt-get install -y php5')    
+    run('apt-get install -y php5')
     run('apt-get remove -y apache2')
     run('apt-get install -y nginx')
     run('apt-get install -y php5-curl php5-gd php5-mysql php5-fpm zip')
@@ -37,7 +31,7 @@ def setup_web():
         result = put(local_php_path, remote_php_path, mode=0644)
     if result.failed and not confirm("Nginx-PHP setup failed. Continue anyway?"):
         abort("Aborting at user request.")
-    
+
     local_default_path = os.getcwd() + '/default'
     remote_default_path = '/etc/nginx/sites-available/default'
     if not exists('/etc/nginx/sites-available/default.bak'):
@@ -45,14 +39,20 @@ def setup_web():
     with settings(warn_only=True):
         result = put(local_default_path, remote_default_path, mode=0644)
     if result.failed and not confirm("Nginx-PHP setup failed. Continue anyway?"):
-        abort("Aborting at user request.")    
-    
-<<<<<<< HEAD
-=======
+        abort("Aborting at user request.")
+
+    local_404_path = os.getcwd() + '/404.html'
+    local_50x_path = os.getcwd() + '/50x.html'
+    remote_error_msg_path = '/usr/share/nginx/html'
+    with settings(warn_only=True):
+        result = put(local_404_path, remote_error_msg_path, mode=0644)
+        result = put(local_50x_path, remote_error_msg_path, mode=0644)
+    if result.failed and not confirm("Nginx setup failed. Continue anyway?"):
+        abort("Aborting at user request.")
+
     if not exists('/etc/nginx/nginx.conf.bak'):
         run('cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf.bak')
     run("sed -i '70 a \\\tclient_max_body_size 5M;' /etc/nginx/nginx.conf")
->>>>>>> 18th Commit
     run('service php5-fpm restart')
     run('service nginx restart')
     run('timedatectl set-timezone Asia/Jakarta')

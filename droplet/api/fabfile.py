@@ -8,17 +8,13 @@ import os
 # Please set the env.hosts according to the real IP of API Server
 env.hosts = ['172.168.2.115']
 env.user = 'root'
-<<<<<<< HEAD
-env.password = 'single-electron-trunk'
-=======
 env.password = '123456'
->>>>>>> 18th Commit
 
 def setup_api():
     if not confirm("Are you sure host " + env.hosts[0] + " is an API Server?"):
         abort("Abort!")
     run('apt-get update')
-    run('apt-get install -y php5 php5-curl php5-mysqlnd apache2 zip')    
+    run('apt-get install -y php5 php5-curl php5-mysqlnd apache2 zip')
     run('a2enmod rewrite')
 
     if not exists('/etc/apache2/sites-available/000-default.conf.bak'):
@@ -27,6 +23,15 @@ def setup_api():
     remote_path = '/etc/apache2/sites-available/000-default.conf'
     with settings(warn_only=True):
         result = put(local_path, remote_path, mode=0644)
+    if result.failed and not confirm("Apache setup failed. Continue anyway?"):
+        abort("Aborting at user request.")
+
+    local_404_path = os.getcwd() + '/404.html'
+    local_50x_path = os.getcwd() + '/50x.html'
+    remote_error_msg_path = '/var/www/html/'
+    with settings(warn_only=True):
+        result = put(local_404_path, remote_error_msg_path, mode=0644)
+        result = put(local_50x_path, remote_error_msg_path, mode=0644)
     if result.failed and not confirm("Apache setup failed. Continue anyway?"):
         abort("Aborting at user request.")
 
