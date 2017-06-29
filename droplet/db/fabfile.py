@@ -6,14 +6,14 @@ from fabric.contrib.files import exists
 import os
 
 # Please set the env.hosts according to the real IP of DB Server
-env.hosts = ['172.168.2.117']
+env.hosts = ['172.168.2.114']
 env.user = 'root'
 env.password = '123456'
 
 API_SERVER_IP = '172.168.2.115'
 WEB_SERVER_IP = '172.168.2.116'
 
-DB_SERVER_IP = '172.168.2.117'
+DB_SERVER_IP = '172.168.2.114'
 ROOT_PASSWORD = 'root_db_pass'
 DB_DEV_USER = 'root_dev'
 DB_DEV_PASSWORD = 'root_dev_pass'
@@ -44,6 +44,9 @@ def setup_db():
     if not exists('/etc/mysql/my.cnf.bak'):
         run('cp /etc/mysql/my.cnf /etc/mysql/my.cnf.bak')
     run("sed -e 's/127.0.0.1/" + DB_SERVER_IP + "/g' /etc/mysql/my.cnf.bak > /etc/mysql/my.cnf")
+    run("cp /etc/mysql/my.cnf /etc/mysql/my.cnf.bak")
+    run("sed -e 's/max_allowed_packet\t= 16M/max_allowed_packet\t= 80M/g' /etc/mysql/my.cnf.bak > /etc/mysql/my.cnf")
+    run("sed -i '50i default-time-zone=\"+07:00\"' /etc/mysql/my.cnf")
     run('service mysql restart')
 
     local_php_path = os.getcwd() + '/php.ini'
@@ -92,7 +95,7 @@ def setup_db():
 
     if not exists('/etc/php5/fpm/php.ini.stream'):
         run('cp /etc/php5/fpm/php.ini /etc/php5/fpm/php.ini.stream')
-    run("sed -e 's/max_execution_time = 30/max_execution_time = 800/g' /etc/php5/fpm/php.ini.stream > /etc/php5/fpm/php.ini")
+    run("sed -e 's/max_execution_time = 30/max_execution_time = 300/g' /etc/php5/fpm/php.ini.stream > /etc/php5/fpm/php.ini")
     run("cp /etc/php5/fpm/php.ini /etc/php5/fpm/php.ini.stream")
     #run("sed -e 's/max_input_time = 60/max_input_time = 600/g' /etc/php5/fpm/php.ini.stream > /etc/php5/fpm/php.ini")
     #run("cp /etc/php5/fpm/php.ini /etc/php5/fpm/php.ini.stream")
