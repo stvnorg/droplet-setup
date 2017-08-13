@@ -14,9 +14,9 @@ API_SERVER_IP = '172.168.2.115'
 WEB_SERVER_IP = '172.168.2.116'
 
 DB_SERVER_IP = '172.168.2.114'
-ROOT_PASSWORD = 'root_db_pass'
-DB_DEV_USER = 'root_dev'
-DB_DEV_PASSWORD = 'root_dev_pass'
+ROOT_PASSWORD = 'PASSWORD'
+DB_DEV_USER = 'dev'
+DB_DEV_PASSWORD = 'PASSWORD'
 
 MYSQL_LOGIN = "mysql -uroot -proot_db_pass -e "
 
@@ -104,8 +104,8 @@ def setup_db():
     #run("sed -e 's/post_max_size = 8M/post_max_size = 50M/g' /etc/php5/fpm/php.ini.stream > /etc/php5/fpm/php.ini")
     #run("cp /etc/php5/fpm/php.ini /etc/php5/fpm/php.ini.stream")
     #run("sed -e 's/upload_max_filesize = 2M/upload_max_filesize = 50M/g' /etc/php5/fpm/php.ini.stream > /etc/php5/fpm/php.ini")
-    #run('service php5-fpm restart')
-    #run('service mysql restart')
-    #run('service nginx restart')
+    run('service php5-fpm restart')
+    run('service mysql restart')
+    run('service nginx restart')
 
     #### End of Line
